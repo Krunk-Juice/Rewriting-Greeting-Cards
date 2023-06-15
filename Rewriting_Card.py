@@ -32,7 +32,7 @@ def get_text(filename):
                 replace_list.append(word)
                 in_word = False
         else:   # a != "
-            if in_word == True:   # in_word == True, add the letter to t word
+            if in_word == True:   # in_word == True, add the letter to the word
                 word += a
             
     #print(replace_list)
