@@ -1,5 +1,5 @@
 # Rewriting-Greeting-Cards
-# CPSC535-SP21-Project1
+## CPSC535-SP21-Project1
 Project 1: Rewriting greeting cards
 
 
