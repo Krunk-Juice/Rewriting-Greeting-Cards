@@ -2,13 +2,14 @@
 # Project 1: Rewriting greeting cards
 # Christopher Ta     cta002@csu.fullerton.edu
 # Sicheng Long       xlongx@csu.fullerton.edu
+# William Lee        leewilliam4@csu.fullerton.edu
 
 '''
 Read the text file, 
-get S[], and split the sentence to words
+get S[]
 get LS[]
 '''
-def split_text(filename):
+def get_text(filename):
     # read the 1st line
     file_object = open(filename)
     text_content = file_object.readline()
@@ -23,15 +24,15 @@ def split_text(filename):
     in_word = False
     replace_list = []
     for a in LS_content:
-        if a == "\"":  # a == "
-            if in_word == False:    # reach the beginning of a new word
+        if a == "\"" or a == "\'":  # a == " or '
+            if in_word == False:    # reach the beginning of a word
                 word = ""
                 in_word = True
-            else: # in_word == True, and it's the end of the word
+            else: # in_word == True, and it's the end of a word
                 replace_list.append(word)
                 in_word = False
         else:   # a != "
-            if in_word == True:   # in_word == True, add the letter to the current word
+            if in_word == True:   # in_word == True, add the letter to t word
                 word += a
             
     #print(replace_list)
@@ -43,80 +44,54 @@ def split_text(filename):
     print("M =", len(LS))
     print("LS[] =", LS)
     
-    # split the file and return the words list
-    text_list = text_content.split()
-    
     file_object.close()
-    return (text_list, LS)
+    return (text_content, LS)
 
-'''
-The punctuation
-'''
-def punctuation(a):
-    if a == "," or a == "." or a == "?" or a == "!" or a == ":":
-        return 1
-    else:
-        return -1
+# get the appeared index of the word need to be replaced
+def find_index(text_content, word):
+    index_list = []
+    index = text_content.find(word) # 1st index word appears in text_content
+    while index != -1:
+        index_list.append(index)
+        index = text_content.find(word, index+1) # get the rest index
     
-def replace_word(text_list, LS):
-    new_word_list = []
-    for word in text_list:
-        
-        '''
-        # first_upper store the first letter of word, if it is uppercase, first_upper = True
-        w = word[0]
-        first_upper = False
-        if w.isupper():
-            first_upper = True
-        '''
-            
-        p = ""
-        changed = False
-        
-        # seperate the word and punctuation
-        if punctuation(word[-1]) == 1:
-            p = word[-1]
-            word = word[:-1]
-        
-        # compare the elements in LS with word
-        # if the same replace the word
-        for word_pair in LS:
-            if word_pair[0] in word and changed == False:
-                #i = len(word_pair[0])
-                #x = word[i : ]
-                #word = word_pair[1] + x
-                word = word.replace(word_pair[0], word_pair[1])
-                changed = True
-        '''
-        # if the first letter is uppercase, change it to upper() after the replacement 
-        if first_upper:
-            W = str(word)[0].upper()
-            word = W + str(word)[1:]
-        '''        
-        
-        # add the punctuation back
-        word = word + str(p)
-        new_word_list.append(word)
-    return new_word_list
-    
-'''
-Rewrite the new word list to a string
-'''
-def new_string(new_word_list):
-    string = ""
-    for word in new_word_list:
-        word += " "
-        string += word
-    return string
+    return index_list
 
+# replace 1 word
+def replace_word(text_content, word_pair, boolean_array):    
+    index_list = find_index(text_content, word_pair[0])  # the indices of word need to be replaced
+    #print(index_list)   # for debug
+    if len(index_list) != 0:
+        for i in reversed(range(len(index_list))):
+            if boolean_array[index_list[i]] == "0":   # if word here is not replaced, replace it, else do nothing
+                text_content = text_content[:index_list[i]] + word_pair[1] + text_content[index_list[i] + len(word_pair[0]):]   # replace the word
+                boolean_chunk = ""
+                for j in range(len(word_pair[1])):
+                    boolean_chunk += "1"
+                boolean_array = boolean_array[:index_list[i]] + boolean_chunk + boolean_array[index_list[i] + len(word_pair[0]):]   # replace the positions with 1, to mark this word has been replaced
+    #print(text_content[:-1])   # for debug
+    #print(boolean_array)   # for debug
+    #print()   # for debug
+    return (text_content, boolean_array)
+
+def replace(text_content, LS):
+    boolean_array = ""
+    for i in range(len(text_content)-1):
+        boolean_array += "0"        # begin with all places are not replaced
+    for word_pair in LS:
+        replace_1_word = replace_word(text_content, word_pair, boolean_array)
+        text_content = replace_1_word[0]       # update text_content after 1 word replacement
+        boolean_array = replace_1_word[1]       # update boolean_array
+    
+    return text_content
 
 if __name__ == '__main__':
     filename = input("Please enter the file name:")
     print()
     print("Input:")
-    text_list = split_text(filename)
-    new_text_list = replace_word(text_list[0], text_list[1])
-    R = new_string(new_text_list)
+    text_list = get_text(filename)
+    new_text = replace(text_list[0], text_list[1])
     print()
     print("Output:")
-    print("R[] = \"", R[:-1], "\"")
+    print("R[] = \"", new_text[:-1], "\"")
+
