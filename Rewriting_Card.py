@@ -24,14 +24,14 @@ def split_text(filename):
     replace_list = []
     for a in LS_content:
         if a == "\"":  # a == "
-            if in_word == False:    # reach the beginning of a new word
+            if in_word == False:    # reach the beginning of a word
                 word = ""
                 in_word = True
-            else: # in_word == True, and it's the end of the word
+            else: # in_word == True, and it's the end of a word
                 replace_list.append(word)
                 in_word = False
         else:   # a != "
-            if in_word == True:   # in_word == True, add the letter to the current word
+            if in_word == True:   # in_word == True, add the letter to t word
                 word += a
             
     #print(replace_list)
@@ -63,17 +63,17 @@ def replace_word(text_list, LS):
     for word in text_list:
         
         '''
-        # first_upper store the first letter of word, if it is uppercase, first_upper = True
+        # first_upper store the first letter of word, if it is uppercase, fisrt_upper = True
         w = word[0]
-        first_upper = False
+        fisrt_upper = False
         if w.isupper():
-            first_upper = True
+            fisrt_upper = True
         '''
             
         p = ""
         changed = False
         
-        # seperate the word and punctuation
+        # seperate the word and punction
         if punctuation(word[-1]) == 1:
             p = word[-1]
             word = word[:-1]
@@ -82,13 +82,14 @@ def replace_word(text_list, LS):
         # if the same replace the word
         for word_pair in LS:
             if word_pair[0] in word and changed == False:
-                i = len(word_pair[0])
-                x = word[i : ]
-                word = word_pair[1] + x
+                #i = len(word_pair[0])
+                #x = word[i : ]
+                #word = word_pair[1] + x
+                word = word.replace(word_pair[0], word_pair[1])
                 changed = True
         '''
-        # if the first letter is uppercase, change it to upper() after the replacement 
-        if first_upper:
+        # if the fisrt letter is uppercase, change it to upper() after the replacement 
+        if fisrt_upper:
             W = str(word)[0].upper()
             word = W + str(word)[1:]
         '''        
